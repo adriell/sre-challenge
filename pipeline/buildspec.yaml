@@ -9,8 +9,13 @@ phases:
   pre_build:
     commands:
       - echo "Fazendo login no Amazon ECR..."
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin YOUR_ECR_REPO
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
       - REPO_URI=$(aws ecr describe-repositories --repository-names sre-challenge-app --query "repositories[0].repositoryUri" --output text)
+
+  tests:
+    commands:
+      - echo "Executando os testes..."
+      - mvn test
 
   build:
     commands:
@@ -22,8 +27,6 @@ phases:
 
   post_build:
     commands:
-      - echo "Executando os testes..."
-      - mvn test
       - echo "Enviando imagem para ECR..."
       - docker push $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
       - docker push $REPO_URI:latest
