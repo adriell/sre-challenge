@@ -4,7 +4,7 @@ replicaCount: 2
 
 image:
   repository: 674622770595.dkr.ecr.us-east-1.amazonaws.com/sre-challenge
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   tag: "latest"
 
 service:
@@ -46,6 +46,12 @@ livenessProbe:
     port: 8080
   initialDelaySeconds: 10
   periodSeconds: 5
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 1
+    maxUnavailable: 1
 
 readinessProbe:
   httpGet:
