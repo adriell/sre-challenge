@@ -1,0 +1,34 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "Instalando dependências do Maven..."
+      - mvn clean install --batch-mode --update-snapshots
+
+  pre_build:
+    commands:
+      - echo "Fazendo login no Amazon ECR..."
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin YOUR_ECR_REPO
+      - REPO_URI=$(aws ecr describe-repositories --repository-names sre-challenge-app --query "repositories[0].repositoryUri" --output text)
+
+  build:
+    commands:
+      - echo "Compilando o projeto..."
+      - mvn clean package -DskipTests
+      - echo "Buildando a imagem Docker..."
+      - docker build -t $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - docker tag $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION $REPO_URI:latest
+
+  post_build:
+    commands:
+      - echo "Executando os testes..."
+      - mvn test
+      - echo "Enviando imagem para ECR..."
+      - docker push $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - docker push $REPO_URI:latest
+      - echo "Criando arquivo de deploy..."
+      - echo "ECR_IMAGE=$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION" > imageDetail.txt
+artifacts:
+  files:
+    - imageDetail.txt

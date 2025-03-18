@@ -1,16 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "sre-challenge-app.name" . }}
+  name: sre-challenge-app
+  labels:
+    app: sre-challenge-app
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "sre-challenge-app.name" . }}
+      app: sre-challenge-app
   template:
     metadata:
       labels:
-        app: {{ include "sre-challenge-app.name" . }}
+        app: sre-challenge-app
     spec:
       containers:
         - name: sre-challenge-app
@@ -18,3 +20,22 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
