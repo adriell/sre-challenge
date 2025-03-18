@@ -9,6 +9,7 @@ phases:
   install:
     commands:
       - echo "Instalando dependências do Maven..."
+      - cd app
       - mvn clean install --batch-mode --update-snapshots
 
   pre_build:
