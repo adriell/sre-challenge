@@ -1,5 +1,10 @@
 version: 0.2
 
+env:
+  variables:
+    ECR_REPO: "674622770595.dkr.ecr.us-east-1.amazonaws.com/sre-challenge-app"
+    IMAGE_TAG: "$CODEBUILD_RESOLVED_SOURCE_VERSION"
+
 phases:
   install:
     commands:
@@ -14,21 +19,25 @@ phases:
 
   build:
     commands:
+      - echo "Mudando para o diretório de código..."
+      - cd app/src
       - echo "Executando os testes..."
       - mvn test
       - echo "Compilando o projeto..."
       - mvn clean package -DskipTests
       - echo "Buildando a imagem Docker..."
-      - docker build -t $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker tag $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION $REPO_URI:latest
+      - docker build -t $REPO_URI:$IMAGE_TAG .
+      - docker tag $REPO_URI:$IMAGE_TAG $REPO_URI:latest
 
   post_build:
     commands:
-      - echo "Enviando imagem para ECR..."
-      - docker push $REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo "Enviando a imagem para o ECR..."
+      - docker push $REPO_URI:$IMAGE_TAG
       - docker push $REPO_URI:latest
-      - echo "Criando arquivo de deploy..."
-      - echo "ECR_IMAGE=$REPO_URI:$CODEBUILD_RESOLVED_SOURCE_VERSION" > imageDetail.txt
+      - echo "Gerando arquivo de metadados da imagem..."
+      - echo "ECR_IMAGE=$REPO_URI:$IMAGE_TAG" > imageDetail.txt
+
 artifacts:
   files:
     - imageDetail.txt
+  discard-paths: yes
