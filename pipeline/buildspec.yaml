@@ -20,7 +20,7 @@ phases:
   build:
     commands:
       - echo "Mudando para o diretório de código..."
-      - cd app/src
+      - cd app
       - echo "Executando os testes..."
       - mvn test
       - echo "Compilando o projeto..."
