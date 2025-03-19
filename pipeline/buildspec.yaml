@@ -7,15 +7,15 @@ env:
 phases:
   install:
     commands:
+      - echo "Fazendo login no Amazon ECR..."
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
       - echo "Instalando dependências do Maven..."
       - cd app
       - mvn clean install --batch-mode --update-snapshots
 
   pre_build:
     commands:
-      - echo "Fazendo login no Amazon ECR..."
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
-      - echo "Definindo a tag da IMG..."
+    - echo "Definindo a tag da IMG..."
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
 
@@ -34,7 +34,6 @@ phases:
       - docker push $ECR_REPO:latest
       - echo "Gerando arquivo de metadados da imagem..."
       - echo "ECR_IMAGE=$ECR_REPO:$IMAGE_TAG" > imageDetail.txt
-      - bash  buildspec-deploy.yaml
 
 artifacts:
   files:

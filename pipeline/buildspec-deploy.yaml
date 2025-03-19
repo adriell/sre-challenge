@@ -20,8 +20,6 @@ phases:
       - sudo mv ./kubectl /usr/local/bin
       - echo "Instalando Helm..."
       - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-      - aws --version
-      - kubectl version --client
 
   pre_build:
     commands:
