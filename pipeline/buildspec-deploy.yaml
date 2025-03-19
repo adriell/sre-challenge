@@ -2,39 +2,49 @@ version: 0.2
 
 env:
   variables:
+    CLUSTER_NAME: "sre-challenge-bottlerocket"  # Nome do cluster EKS
+    REGION: "us-east-1"  # Região AWS
     ECR_REPO: "674622770595.dkr.ecr.us-east-1.amazonaws.com/sre-challenge-app"
-    IMAGE_TAG: $CODEBUILD_RESOLVED_SOURCE_VERSION
+    HELM_RELEASE_NAME: "sre-challenge-app"  # Nome do release Helm
+    HELM_NAMESPACE: "challenge"  # Namespace onde o Helm vai rodar
 
 phases:
   install:
     commands:
-      - echo "Instalando dependências do Maven..."
-      - cd app
-      - mvn clean install --batch-mode --update-snapshots
+      - echo "Instalando dependências..."
+      - echo "Instalando AWS CLI..."
+      - pip install awscli
+      - echo "Instalando kubectl..."
+      - curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.18.9/2021-01-06/bin/linux/amd64/kubectl
+      - chmod +x ./kubectl
+      - sudo mv ./kubectl /usr/local/bin
+      - echo "Instalando Helm..."
+      - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+      - aws --version
+      - kubectl version --client
 
   pre_build:
     commands:
-      - echo "Fazendo login no Amazon ECR..."
-      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
-      - REPO_URI=$(aws ecr describe-repositories --repository-names sre-challenge-app --query "repositories[0].repositoryUri" --output text)
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - echo "Autenticando no ECR..."
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REPO
+      - echo "Obtendo credenciais do EKS..."
+      - aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
+      - echo "Atualizando o repositório Helm..."
+      - helm repo update
 
   build:
     commands:
-      - echo "Compilando o projeto..."
-      - mvn clean package -DskipTests
-      - echo "Buildando a imagem Docker..."
-      - docker build -t $ECS_REPO:$IMAGE_TAG .
-      - docker tag $ECS_REPO:$IMAGE_TAG $ECS_REPO:latest
+      - echo "Empacotando o chart Helm..."
+      - helm package ./helm  # Assume que o chart Helm está no diretório helm-chart
+      - echo "Adicionando a imagem no Helm Chart..."
+      - helm upgrade --install $HELM_RELEASE_NAME ./helm --set image.repository=$ECR_REPO --set image.tag=$IMAGE_TAG --namespace $HELM_NAMESPACE
 
   post_build:
     commands:
-      - echo "Enviando a imagem para o ECR..."
-      - docker push $ECS_REPO:$IMAGE_TAG
-      - docker push $ECS_REPO:latest
-      - echo "Gerando arquivo de metadados da imagem..."
-      - echo "ECR_IMAGE=$ECS_REPO:$IMAGE_TAG" > imageDetail.txt
+      - echo "Deploy concluído com sucesso!"
 
 artifacts:
   files:
-    - imageDetail.txt
+    - helm-chart/*.tgz  # Pacote do chart gerado
   discard-paths: yes
