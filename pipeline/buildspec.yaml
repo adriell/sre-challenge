@@ -3,7 +3,6 @@ version: 0.2
 env:
   variables:
     ECR_REPO: "674622770595.dkr.ecr.us-east-1.amazonaws.com/sre-challenge-app"
-    IMAGE_TAG: ${CODEBUILD_RESOLVED_SOURCE_VERSION//[:]/-}
 
 phases:
   install:
@@ -17,6 +16,9 @@ phases:
     commands:
       - echo "Fazendo login no Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
+      - echo "Definindo a tag da IMG..."
+      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION//[:]/-}
+
 
   build:
     commands:
