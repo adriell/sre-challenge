@@ -24,7 +24,7 @@ phases:
       - echo "Compilando o projeto..."
       - mvn clean package -DskipTests
       - echo "Buildando a imagem Docker..."
-      - docker build -t $ECR_REPO:$IMAGE_TAG ../docker
+      - cd .. && docker build -t $ECR_REPO:$IMAGE_TAG -f docker/Dockerfile
       - docker tag $ECR_REPO:$IMAGE_TAG $ECR_REPO:latest
 
   post_build:
