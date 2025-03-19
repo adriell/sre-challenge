@@ -29,6 +29,7 @@ phases:
       - echo "Obtendo credenciais do EKS..."
       - aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
       - echo "Atualizando o repositório Helm..."
+      - helm repo add stable https://charts.helm.sh/stable
       - helm repo update
 
   build:
