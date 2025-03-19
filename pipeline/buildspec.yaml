@@ -29,10 +29,10 @@ phases:
   post_build:
     commands:
       - echo "Enviando a imagem para o ECR..."
-      - docker push $REPO_URI:$IMAGE_TAG
-      - docker push $REPO_URI:latest
+      - docker push $ECS_REPO:$IMAGE_TAG
+      - docker push $ECS_REPO:latest
       - echo "Gerando arquivo de metadados da imagem..."
-      - echo "ECR_IMAGE=$REPO_URI:$IMAGE_TAG" > imageDetail.txt
+      - echo "ECR_IMAGE=$ECS_REPO:$IMAGE_TAG" > imageDetail.txt
 
 artifacts:
   files:
