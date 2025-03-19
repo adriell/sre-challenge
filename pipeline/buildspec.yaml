@@ -3,12 +3,13 @@ version: 0.2
 env:
   variables:
     ECR_REPO: "674622770595.dkr.ecr.us-east-1.amazonaws.com/sre-challenge-app"
-    IMAGE_TAG: $CODEBUILD_RESOLVED_SOURCE_VERSION
+    IMAGE_TAG: ${CODEBUILD_RESOLVED_SOURCE_VERSION//[:]/-}
 
 phases:
   install:
     commands:
       - echo "Instalando dependências do Maven..."
+      - echo $IMAGE_TAG
       - cd app
       - mvn clean install --batch-mode --update-snapshots
 
