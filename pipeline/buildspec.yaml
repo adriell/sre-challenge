@@ -16,7 +16,7 @@ phases:
   pre_build:
     commands:
     - echo "Definindo a tag da IMG..."
-      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+    - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
 
   build:
