@@ -2,12 +2,7 @@ FROM maven:3.9.9-amazoncorretto-23 AS builder
 
 WORKDIR /app
 
-COPY ./app/pom.xml .
-
-RUN mvn clean package
-
-COPY ./app/src ./src
-
+COPY ./app .
 RUN mvn clean package -DskipTests
 
 FROM maven:3.9.9-amazoncorretto-23-alpine
