@@ -21,8 +21,8 @@ phases:
       - echo "Instalando Helm..."
       - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       - echo "Obtendo credenciais do EKS..."
-      - aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
-      - kubectl config view
+      - aws eks --region us-east-1 update-kubeconfig --name $CLUSTER_NAME
+      - kubectl config current-context
 
   pre_build:
     commands:
