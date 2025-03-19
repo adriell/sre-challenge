@@ -8,7 +8,6 @@ phases:
   install:
     commands:
       - echo "Instalando dependências do Maven..."
-      - echo $IMAGE_TAG
       - cd app
       - mvn clean install --batch-mode --update-snapshots
 
@@ -17,7 +16,7 @@ phases:
       - echo "Fazendo login no Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
       - echo "Definindo a tag da IMG..."
-      - IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION//[:]/-}
+      - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
 
 
   build:
