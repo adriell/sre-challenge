@@ -1,11 +1,13 @@
-FROM maven:3.9.9-amazoncorretto-23 AS builder
+FROM public.ecr.aws/amazoncorretto/21 AS builder
 
 WORKDIR /app
+
+RUN yum install -y maven
 
 COPY . .
 RUN mvn clean package -DskipTests
 
-FROM maven:3.9.9-amazoncorretto-23-alpine
+FROM public.ecr.aws/amazoncorretto/21-alpine
 
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
