@@ -23,8 +23,8 @@ phases:
       - echo "Compilando o projeto..."
       - mvn clean package -DskipTests
       - echo "Buildando a imagem Docker..."
-      - docker build -t $REPO_URI:$IMAGE_TAG .
-      - docker tag $REPO_URI:$IMAGE_TAG $REPO_URI:latest
+      - docker build -t $ECS_REPO:$IMAGE_TAG .
+      - docker tag $ECS_REPO:$IMAGE_TAG $ECS_REPO:latest
 
   post_build:
     commands:
