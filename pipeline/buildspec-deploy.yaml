@@ -16,22 +16,23 @@ phases:
     commands:
       - echo "Fazendo login no Amazon ECR..."
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ECR_REPO
+      - REPO_URI=$(aws ecr describe-repositories --repository-names sre-challenge-app --query "repositories[0].repositoryUri" --output text)
 
   build:
     commands:
       - echo "Compilando o projeto..."
       - mvn clean package -DskipTests
       - echo "Buildando a imagem Docker..."
-      - docker build -t $ECR_REPO:$IMAGE_TAG .
-      - docker tag $ECR_REPO:$IMAGE_TAG $ECR_REPO:latest
+      - docker build -t $ECS_REPO:$IMAGE_TAG .
+      - docker tag $ECS_REPO:$IMAGE_TAG $ECS_REPO:latest
 
   post_build:
     commands:
       - echo "Enviando a imagem para o ECR..."
-      - docker push $ECR_REPO:$IMAGE_TAG
-      - docker push $ECR_REPO:latest
+      - docker push $ECS_REPO:$IMAGE_TAG
+      - docker push $ECS_REPO:latest
       - echo "Gerando arquivo de metadados da imagem..."
-      - echo "ECR_IMAGE=$ECR_REPO:$IMAGE_TAG" > imageDetail.txt
+      - echo "ECR_IMAGE=$ECS_REPO:$IMAGE_TAG" > imageDetail.txt
 
 artifacts:
   files:
