@@ -20,14 +20,15 @@ phases:
       - sudo mv ./kubectl /usr/local/bin
       - echo "Instalando Helm..."
       - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+      - echo "Obtendo credenciais do EKS..."
+      - aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
+      - kubectl config view
 
   pre_build:
     commands:
       - IMAGE_TAG=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - echo "Autenticando no ECR..."
       - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REPO
-      - echo "Obtendo credenciais do EKS..."
-      - aws eks --region $REGION update-kubeconfig --name $CLUSTER_NAME
       - echo "Atualizando o repositório Helm..."
       - helm repo add stable https://charts.helm.sh/stable
       - helm repo update
