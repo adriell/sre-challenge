@@ -10,6 +10,7 @@ env:
 
 phases:
   install:
+    commands:
       - echo "Instalando Helm..."
       - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       - echo "Obtendo credenciais do EKS..."
