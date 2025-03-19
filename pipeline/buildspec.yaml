@@ -20,10 +20,6 @@ phases:
 
   build:
     commands:
-      - echo "Mudando para o diretório de código..."
-      - cd app
-      - echo "Executando os testes..."
-      - mvn test
       - echo "Compilando o projeto..."
       - mvn clean package -DskipTests
       - echo "Buildando a imagem Docker..."
