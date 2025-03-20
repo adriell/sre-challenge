@@ -17,11 +17,11 @@ ingress:
     kubernetes.io/ingress.class: "alb"
     alb.ingress.kubernetes.io/scheme: "internal"
     alb.ingress.kubernetes.io/target-type: "ip"
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
     alb.ingress.kubernetes.io/subnets: "subnet-043be10d9c45a7b00, subnet-0e8b00c66b770a0f0"
     alb.ingress.kubernetes.io/security-groups: "sg-0d767ea4ef8151def"
-    alb.ingress.kubernetes.io/listen-ports: "80"
   hosts:
-    - host: sre.challenge.itau
+    - host: 
       paths:
         - path: /
           pathType: Prefix
@@ -30,7 +30,6 @@ ingress:
               name: sre-challenge-app-service
               port:
                 number: 8080
-  pathType: Prefix
 
 resources:
   limits:
