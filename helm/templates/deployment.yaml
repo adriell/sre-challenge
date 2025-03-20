@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sre-challenge-app
+  name: {{ .Release.Name }}
   labels:
-    app: sre-challenge-app
+    app: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy: 
@@ -14,14 +14,14 @@ spec:
 
   selector:
     matchLabels:
-      app: sre-challenge-app
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: sre-challenge-app
+        app: {{ .Release.Name }}
     spec:
       containers:
-        - name: sre-challenge-app
+        - name: {{ .Release.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:

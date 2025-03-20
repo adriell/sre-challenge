@@ -47,3 +47,10 @@ strategy:
   rollingUpdate:
     maxSurge: 1
     maxUnavailable: 1
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  cpuUtilization: 70  # Escala quando CPU passar de 70%
+  memoryUtilization: 80 
