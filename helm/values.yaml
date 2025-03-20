@@ -18,6 +18,12 @@ ingress:
     alb.ingress.kubernetes.io/scheme: "internal"
     alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "10"  # Frequência do health check
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "5"  # Timeout do health check
+    alb.ingress.kubernetes.io/success-codes: "200-299"
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/load-balancer-attributes: "idle_timeout.timeout_seconds=60"  # Configurações do ALB
     alb.ingress.kubernetes.io/subnets: "subnet-043be10d9c45a7b00, subnet-0e8b00c66b770a0f0"
     alb.ingress.kubernetes.io/security-groups: "sg-0d767ea4ef8151def"
   hosts:
